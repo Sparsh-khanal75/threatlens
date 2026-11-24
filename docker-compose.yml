@@ -1,0 +1,20 @@
+# docker compose run --rm threatlens recon example.com --summary
+services:
+  ollama:
+    image: ollama/ollama:latest
+    volumes: ["ollama:/root/.ollama"]
+    # first run: docker compose exec ollama ollama pull llama3.1:8b
+
+  threatlens:
+    build: .
+    depends_on: [ollama]
+    environment:
+      OLLAMA_URL: http://ollama:11434
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-llama3.1:8b}
+      VT_API_KEY: ${VT_API_KEY:-}
+      ABUSEIPDB_API_KEY: ${ABUSEIPDB_API_KEY:-}
+      ABUSECH_AUTH_KEY: ${ABUSECH_AUTH_KEY:-}
+    volumes: ["./reports:/home/analyst/reports"]
+
+volumes:
+  ollama:

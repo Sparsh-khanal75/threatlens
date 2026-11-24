@@ -1,0 +1,6 @@
+SOC ticket #4471 - user-reported phishing (simulated)
+
+Sender:   accounts@northwind-invoices[.]top
+Link:     hxxp://northwind-invoices[.]top/pay/inv88213.php
+Sent via: 203.0.113.77
+Attachment SHA256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
