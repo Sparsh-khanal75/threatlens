@@ -122,3 +122,7 @@ ThreatLens is built for **defenders investigating their own organisation's attac
 ## License
 
 MIT
+
+## Author
+
+**Sparsh Khanal** · [GitHub](https://github.com/Sparsh-khanal75) · [LinkedIn](https://www.linkedin.com/in/Sparsh-khanal75)
