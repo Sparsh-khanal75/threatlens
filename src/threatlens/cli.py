@@ -28,7 +28,7 @@ console = Console()
 COLORS = {"critical": "magenta", "high": "red", "medium": "dark_orange", "low": "yellow", "info": "cyan"}
 
 Summary = typer.Option(False, "--summary", "-s", help="Write an analyst summary with a local Ollama model")
-Out = typer.Option(None, "--out", "-o", help="Save report: .md or .json")
+Out = typer.Option(None, "--out", "-o", help="Save report: .md, .json or .html")
 NoCache = typer.Option(False, "--no-cache", help="Bypass the local response cache")
 
 
@@ -70,7 +70,8 @@ def _run(kind: str, target, summary: bool, out: Path | None, no_cache: bool, **k
     rep = asyncio.run(_collect(kind, target, summary, no_cache, **kw))
     _show(rep)
     if out:
-        out.write_text(report.to_json(rep) if out.suffix == ".json" else report.to_markdown(rep), encoding="utf-8")
+        render = {".json": report.to_json, ".html": report.to_html}.get(out.suffix.lower(), report.to_markdown)
+        out.write_text(render(rep), encoding="utf-8")
         console.print(f"[green]Saved {out}[/]")
 
 

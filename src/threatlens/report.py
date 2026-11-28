@@ -1,8 +1,9 @@
-"""Markdown and JSON report rendering."""
+"""Markdown, JSON and HTML report rendering."""
 
 from __future__ import annotations
 
 import json
+from collections import Counter
 
 from .core import Report, __version__
 
@@ -104,3 +105,46 @@ def _details(rep: Report) -> list[str]:
             )
         out.append("")
     return out
+
+
+TITLES = {"recon": "Domain recon report", "ioc": "IOC enrichment report", "typosquat": "Typosquat monitoring report"}
+
+
+def to_html(rep: Report, banner: str = "") -> str:
+    """Self-contained HTML dashboard for a report."""
+    from .html_report import Report as Page
+    from .html_report import render
+
+    counts = Counter(f.severity for f in rep.findings)
+    target = rep.target if isinstance(rep.target, str) else f"{len(rep.target)} indicators"
+    extras = []
+    if rep.summary:
+        extras.append((f"Analyst summary · {rep.summary_source}", rep.summary))
+    if rep.errors:
+        extras.append(("Notes", "\n".join(rep.errors)))
+    page = Page(
+        tool=f"threatlens {__version__}",
+        title=TITLES.get(rep.kind, f"{rep.kind} report"),
+        subtitle=banner or f"Target: {target}",
+        meta={"target": target, "module": rep.kind, "data generated": rep.generated_at},
+        kpis=[
+            ("findings", len(rep.findings), "acc"),
+            (
+                "critical + high",
+                counts["critical"] + counts["high"],
+                "bad" if counts["critical"] + counts["high"] else "good",
+            ),
+            ("medium", counts["medium"], "warn"),
+            ("intel sources", len({f.source for f in rep.findings if f.source}), "acc"),
+            ("notes / errors", len(rep.errors), "warn" if rep.errors else "good"),
+        ],
+        charts=[("Findings by source", Counter(f.source or "-" for f in rep.findings).most_common(8))],
+        extras=extras,
+        columns=["finding", "detail", "source"],
+        rows=[
+            {"severity": f.severity, "finding": f.title, "detail": f.detail, "source": f.source or "-"}
+            for f in rep.sorted_findings()
+        ],
+        empty_message="No findings.",
+    )
+    return render(page)
