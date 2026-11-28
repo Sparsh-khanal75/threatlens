@@ -2,7 +2,8 @@
 Offline demo: runs all three modules against SIMULATED data (mocked HTTP + in-memory DNS)
 and writes the example reports in this folder. No network access needed.
 
-    python examples/demo.py
+    python examples/demo.py          # writes .md and .html reports
+    python examples/demo.py --show   # also prints them the way the CLI does
 
 All domains/IPs are fictional or from RFC 5737 documentation ranges.
 """
@@ -226,7 +227,15 @@ async def main():
                     + report.to_markdown(rep),
                     encoding="utf-8",
                 )
-                print(f"wrote examples/{name}_report.md ({len(rep.findings)} findings)")
+                OUT.joinpath(f"{name}_report.html").write_text(
+                    report.to_html(rep, banner="Demo report generated from simulated data (python examples/demo.py)"),
+                    encoding="utf-8",
+                )
+                print(f"wrote examples/{name}_report.md/.html ({len(rep.findings)} findings)")
+                if "--show" in sys.argv:  # render exactly as the CLI does
+                    from threatlens.cli import _show
+
+                    _show(rep)
 
 
 if __name__ == "__main__":
