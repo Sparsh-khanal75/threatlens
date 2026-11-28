@@ -19,6 +19,18 @@ threatlens typosquat northwind-demo.com -o lookalikes.md
 
 Example reports: [recon](examples/recon_report.md) · [IOC enrichment](examples/ioc_report.md) · [typosquat](examples/typosquat_report.md). These were generated from simulated data by `python examples/demo.py`.
 
+## Screenshots
+
+Both images come from `python examples/demo.py --show`, which runs all three modules offline against **simulated** data (mocked HTTP and in-memory DNS, with fictional domains and documentation IP ranges), so it can be reproduced without network access or API keys.
+
+**Terminal:** recon, IOC enrichment and typosquat results as the CLI prints them.
+
+![threatlens terminal output](docs/screenshots/terminal.png)
+
+**HTML report (`-o report.html`):** a self-contained dashboard with the analyst summary. Open [`examples/recon_report.html`](examples/recon_report.html) to try it.
+
+![threatlens HTML recon report](docs/screenshots/html-report.png)
+
 ## Architecture
 
 ```mermaid
@@ -89,6 +101,7 @@ cp .env.example .env    # optional API keys; every module works without them, wi
 ollama pull llama3.1:8b
 
 threatlens --help
+threatlens recon example.com -o report.html   # .md, .json or a self-contained .html dashboard
 ```
 
 **Docker (tool + Ollama):**
